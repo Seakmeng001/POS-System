@@ -1,0 +1,14 @@
+.container{
+    width: 400px;
+    height: 600px;
+    background-color: antiquewhite;
+    padding: 25px;
+    border-radius: 10px;
+    margin: auto;
+}
+.txtLogin{
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,8 @@
+cd folder
+cd folder1/folder2/..
+cd ..
+cd ../..
+
+npx create-react-app project_name
+npx start // run for development
+npm run build // bundle for production /deploy
