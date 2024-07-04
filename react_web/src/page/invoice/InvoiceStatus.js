@@ -2,7 +2,7 @@ import { Stack, Table, Button, Modal, FloatingLabel, Form } from "react-bootstra
 import { request } from "../../share/request";
 import { useEffect, useState } from "react";
 
-const  InvoiceStatus= () => {
+const InvoiceStatus = () => {
     const [list, setList] = useState([]);
     const [visible, setVisible] = useState(false);
     const [total, setTotal] = useState(0);
@@ -11,7 +11,6 @@ const  InvoiceStatus= () => {
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
     const [description, setDescription] = useState("");
-   
 
     useEffect(() => {
         getList();
@@ -32,13 +31,14 @@ const  InvoiceStatus= () => {
     };
 
     const onClickEdit = (item) => {
-        setPayId(item.id); 
+        setPayId(item.id);
         setId(item.id);
         setName(item.name);
         setCode(item.code);
         setDescription(item.description);
         setVisible(true);
     };
+
     const onChangeId = (event) => setId(event.target.value);
     const onChangeName = (event) => setName(event.target.value);
     const onChangeCode = (event) => setCode(event.target.value);
@@ -79,51 +79,48 @@ const  InvoiceStatus= () => {
     };
 
     const onSubmit = async () => {
-        if(payId == ""){
-            var data = {
-                id:id,
-                name : name, 
-                code:code,
-                description : description
-                
+        const data = {
+            id: id,
+            name: name,
+            code: code,
+            description: description,
+        };
+
+        try {
+            if (payId === "") {
+                const res = await request("invoice_status", "post", data);
+                if (res) {
+                    getList();
+                    onCancel();
+                } else {
+                    alert("Error creating invoice status!");
+                }
+            } else {
+                data.id = payId;
+                const res = await request("invoice_status", "put", data);
+                if (res) {
+                    getList();
+                    onCloseModal();
+                } else {
+                    alert("Error updating invoice status!");
+                }
             }
-            const res = request("invoice_status","post",data)
-            onCancel()
-            if(res){
-                getList(); // re call function list 
-            }else{
-                alert("Error!")
-            }
-        }else{
-            // update
-            var data = {
-                id   : payId, 
-                name : name, 
-                code : code,
-                description : description
-               
-            }
-            const res = request("invoice_status","put",data)
-            onCloseModal()
-            if(res){
-                getList(); // re call function list 
-            }else{
-                alert("Error!")
-            }
+        } catch (error) {
+            console.error("Error submitting invoice status:", error);
+            alert("An error occurred while submitting the invoice status.");
         }
     };
 
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', padding: 5 }}>
-            <div>Total: {total} invoice status</div>
+                <div>Total: {total} invoice status</div>
                 <Button onClick={onOpenModal}>New invoice status</Button>
             </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>No</th>
-                        {/* <th>Id</th> */}
                         <th>Name</th>
                         <th>Code</th>
                         <th>Description</th>
@@ -134,14 +131,13 @@ const  InvoiceStatus= () => {
                     {list.map((item, index) => (
                         <tr key={index}>
                             <td>{index + 1}</td>
-                            {/* <td>{item.id}</td> */}
                             <td>{item.name}</td>
                             <td>{item.code}</td>
                             <td>{item.description}</td>
                             <td style={{ width: 100 }}>
                                 <Stack gap={1} direction="horizontal">
-                                    <Button size='small' onClick={() => onClickEdit(item)}>Edit</Button>
-                                    <Button size='small' variant="danger" onClick={() => onDelete(item.id)}>Delete</Button>
+                                    <Button size="small" onClick={() => onClickEdit(item)}>Edit</Button>
+                                    <Button size="small" variant="danger" onClick={() => onDelete(item.id)}>Delete</Button>
                                 </Stack>
                             </td>
                         </tr>
@@ -150,12 +146,9 @@ const  InvoiceStatus= () => {
             </Table>
             <Modal show={visible} onHide={onCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{(payId === "") ? "New" : "Update"}</Modal.Title>
+                    <Modal.Title>{payId === "" ? "New" : "Update"} Invoice Status</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                {/* <FloatingLabel controlId="Id" label="Id" className="mb-3">
-                        <Form.Control onChange={onChangeId} value={id} type="text" placeholder="Id payment" />
-                    </FloatingLabel> */}
                     <FloatingLabel controlId="Name" label="Name" className="mb-3">
                         <Form.Control onChange={onChangeName} value={name} type="text" placeholder="Name" />
                     </FloatingLabel>
@@ -169,11 +162,11 @@ const  InvoiceStatus= () => {
                 <Modal.Footer>
                     <Button variant="secondary" onClick={onCancel}>Cancel</Button>
                     <Button variant="secondary" onClick={onClear}>Clear</Button>
-                    <Button variant="primary" onClick={onSubmit}>{(payId === "") ? "Save" : "Update"}</Button>
+                    <Button variant="primary" onClick={onSubmit}>{payId === "" ? "Save" : "Update"}</Button>
                 </Modal.Footer>
             </Modal>
         </div>
     );
 };
 
-export default  InvoiceStatus;
+export default InvoiceStatus;

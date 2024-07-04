@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Button, Space, Spin, Table, Input, Row, Col, Modal, Form, Divider, message, Select, InputNumber, Image, Popconfirm } from "antd";
-import { IoIosCloseCircle, IoMdCloseCircle } from "react-icons/io";
+import { IoMdCloseCircle } from "react-icons/io";
 import { request } from "../../share/request";
 import { formatDateClient, config } from "../../share/helper";
 import styles from "./styles.module.css";
@@ -22,12 +22,14 @@ const Product = () => {
     const [totalRecord, setTotalRecord] = useState(0);
     const [imagePre, setImagePre] = useState(null);
     const [id, setId] = useState(null);
-    
+
     const [textSearch, setTextSearch] = useState("");
     const [objFilter, setObjFilter] = useState({
         page: 1,
         txtSearch: ""
     });
+
+    const refMyImage = useRef();
 
     useEffect(() => {
         getList(objFilter);
@@ -82,7 +84,9 @@ const Product = () => {
         form.resetFields();
         setImagePre(null);
         setImage(null);
-        refMyImage.current.value = null;
+        if (refMyImage.current) {
+            refMyImage.current.value = null;
+        }
         setId(null);
         setVisibleModal(true);
     };
@@ -98,12 +102,12 @@ const Product = () => {
             formData.append("description", values.description);
             formData.append("image", form.getFieldValue("image"));
       
-            if (image !=null) {
-                formData.append("image_pro", image,image.filename);
+            if (image != null) {
+                formData.append("image_pro", image, image.filename);
             }
             
             var method = "post";
-            if (id !=null) {
+            if (id != null) {
                 formData.append("id", id);
                 method = "put";
             }
@@ -127,7 +131,9 @@ const Product = () => {
         form.resetFields();
         setImage(null);
         setImagePre(null);
-        refMyImage.current.value = null;
+        if (refMyImage.current) {
+            refMyImage.current.value = null;
+        }
     };
 
     const onChangeFile = (e) => {
@@ -135,7 +141,6 @@ const Product = () => {
         setImage(file);
         setImagePre(URL.createObjectURL(file));
     };
-    const refMyImage = useRef();
 
     const onChangePage = (page) => {
         setObjFilter(prev => ({ ...prev, page }));
@@ -161,7 +166,7 @@ const Product = () => {
         form.setFieldsValue({
             categoryId: item.categoryId,
             name: item.name,
-            id:item.id,
+            id: item.id,
             description: item.description,
             price: item.price,
             status: item.status,
@@ -175,9 +180,7 @@ const Product = () => {
         e.preventDefault();
         setImagePre(null);
         setImage(null);
-        
         form.setFieldsValue({ image: null });
-       
     };
 
     return (
@@ -249,7 +252,7 @@ const Product = () => {
                             <div>
                                 {value ? (
                                     <Image
-                                        width={100} 
+                                        width={100}
                                         src={config.image_path + value}
                                     />
                                 ) : (
@@ -305,7 +308,6 @@ const Product = () => {
                     <Row gutter={5}>
                         <Col span={12}>
                             <Form.Item
-                            
                                 label="Product Name"
                                 name="name"
                                 rules={[{ required: true, message: 'Please input product name!' }]}
@@ -320,16 +322,15 @@ const Product = () => {
                                 rules={[{ required: true, message: 'Please select category!' }]}
                             >
                                 <Select placeholder="Select category">
-                                    {listCategory.map((item,index) => (
+                                    {listCategory.map((item, index) => (
                                         <Select.Option key={index} value={item.id}>{item.Name}</Select.Option>
                                     ))}
                                 </Select>
                             </Form.Item>
                         </Col>
-                        
                     </Row>
                     <Row gutter={5}>
-                    <Col span={12}>
+                        <Col span={12}>
                             <Form.Item
                                 label="Code"
                                 name="id"
@@ -339,7 +340,6 @@ const Product = () => {
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-
                             <Form.Item
                                 label="Description"
                                 name="description"
@@ -357,7 +357,6 @@ const Product = () => {
                                 <InputNumber style={{ width: '100%' }} placeholder="Price" />
                             </Form.Item>
                         </Col>
-                        
                     </Row>
                     <Row gutter={5}>
                         <Col span={12}>
@@ -373,20 +372,21 @@ const Product = () => {
                             </Form.Item>
                         </Col>
                         <Col span={12}>
-                        
-                        <Form.Item label="Select picture">
-                  <input type="file" ref={refMyImage} onChange={onChangeFile} />
-                  <div>
-                    <img src={imagePre} width={100} style={{ marginTop: 10 }} />
-                    {id != null && imagePre != null && (
-                      <div>
-                        <button onClick={onRemoveImageUpdate}>
-                          <IoMdCloseCircle size={22} color="red" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </Form.Item>
+                            <Form.Item label="Select picture">
+                                <input type="file" ref={refMyImage} onChange={onChangeFile} />
+                                <div>
+                                    {imagePre && (
+                                        <img src={imagePre} width={100} style={{ marginTop: 10 }} />
+                                    )}
+                                    {id != null && imagePre != null && (
+                                        <div>
+                                            <button onClick={onRemoveImageUpdate}>
+                                                <IoMdCloseCircle size={22} color="red" />
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </Form.Item>
                         </Col>
                     </Row>
                     <Divider />
